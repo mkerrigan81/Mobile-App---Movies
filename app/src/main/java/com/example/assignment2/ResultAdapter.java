@@ -40,8 +40,10 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
 
             case 1:
                 ParseObject object = list.get(position);
-                if (object.getString("Title") != null)
+                if (object.getString("Title") != null){
                     holder.name.setText(object.getString("Title"));
+                    holder.radio.setVisibility(View.INVISIBLE);
+                }
                 else
                     holder.name.setText("null");
 
@@ -63,11 +65,13 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
                 ParseObject favouriteObject = list.get(position);
                 if (favouriteObject.getBoolean("fav")){
                     holder.name.setText(favouriteObject.getString("Title"));
+                    holder.radio.setVisibility(View.INVISIBLE);
                     holder.cb.setChecked(true);
                 }
                 else {
                     holder.name.setText("");
                     holder.cb.setVisibility(View.INVISIBLE);
+                    holder.radio.setVisibility(View.INVISIBLE);
                 }
 
                 holder.cb.setOnClickListener(new View.OnClickListener() {
@@ -90,6 +94,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
                 if (editObject.getString("Title") != null){
                     holder.name.setText(editObject.getString("Title"));
                     holder.cb.setVisibility(View.INVISIBLE);
+                    holder.radio.setVisibility(View.INVISIBLE);
                 }
 
                 else{
@@ -121,6 +126,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
                 if (searchObject.getString("Title")!= null){
                     holder.name.setText(searchObject.getString("Title"));
                     holder.cb.setVisibility(View.INVISIBLE);
+                    holder.radio.setVisibility(View.INVISIBLE);
                 }else{
                     holder.name.setText("null");
                 }
@@ -136,6 +142,19 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
                 else{
                     holder.name.setText("null");
                 }
+
+                holder.radio.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if (holder.radio.isChecked()){
+                            System.out.println(list.get(position).getString("Title"));
+                            arrayListChecked.add(list.get(position).getString("Title"));
+                        }else{
+                            arrayListChecked.remove(list.get(position).getString("Title"));
+                        }
+
+                    }
+                });
                 break;
         }
     }

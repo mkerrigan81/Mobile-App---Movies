@@ -3,6 +3,7 @@ package com.example.assignment2;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ public class ResultHolder extends RecyclerView.ViewHolder {
     TextView name;
     EditText title, year, director, actors, review, favourite, lookup;
     CheckBox cb;
+    RadioButton radio;
     RatingBar ratingBar;
     String compareTitle, compareDirector, compareActor;
 
@@ -22,6 +24,7 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         //Setting all our variables to the appropriate item in the layout view
         name = itemView.findViewById(R.id.textViewName);
         cb = itemView.findViewById(R.id.checkBox);
+        radio = itemView.findViewById(R.id.radioButton);
 
         title = itemView.findViewById(R.id.txtTitleResult);
         year = itemView.findViewById(R.id.txtYearResult);
