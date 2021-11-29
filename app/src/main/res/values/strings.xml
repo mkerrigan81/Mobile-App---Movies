@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Assignment2</string>
+
+    <string name="back4app_server_url">https://parseapi.back4app.com/</string>
+    <string name="back4app_app_id">2cUvKROFCBzD7PuhmOcy4cbArvx0JNms7s6JLcoY</string>
+    <string name="back4app_client_key">76DgBddAmU7HCAL22sNprZKza8jHJ21OkvozOW7U</string>
+</resources>
