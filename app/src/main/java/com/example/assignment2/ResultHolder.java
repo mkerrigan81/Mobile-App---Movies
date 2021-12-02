@@ -7,16 +7,17 @@ import android.widget.RadioButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ResultHolder extends RecyclerView.ViewHolder {
-    TextView name;
-    EditText title, year, director, actors, review, favourite, lookup;
+    TextView name, displayList;
+    EditText title, year, director, actors, review, favourite;
     CheckBox cb;
     RadioButton radio;
     RatingBar ratingBar;
-    String compareTitle, compareDirector, compareActor;
+
+    //For ratings page
+    TextView viewTitle, viewRating;
 
 
     public ResultHolder(View itemView) {
@@ -26,6 +27,7 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         cb = itemView.findViewById(R.id.checkBox);
         radio = itemView.findViewById(R.id.radioButton);
 
+        //For editMovie question
         title = itemView.findViewById(R.id.txtTitleResult);
         year = itemView.findViewById(R.id.txtYearResult);
         director = itemView.findViewById(R.id.txtDirectorResult);
@@ -34,7 +36,10 @@ public class ResultHolder extends RecyclerView.ViewHolder {
         ratingBar = itemView.findViewById(R.id.ratingBar);
         favourite = itemView.findViewById(R.id.txtFavouriteResult);
 
-        /*lookup = itemView.findViewById(R.id.txtSearchBox);
-        str1 = lookup.getText().toString();*/
+        //For rating question
+        /*displayList = itemView.findViewById(R.id.txtDisplayList);*/
+
+        viewTitle = itemView.findViewById(R.id.textViewTitle);
+        viewRating = itemView.findViewById(R.id.textViewRating);
     }
 }

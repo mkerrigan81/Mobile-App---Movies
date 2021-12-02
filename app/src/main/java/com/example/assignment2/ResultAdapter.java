@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.parse.ParseObject;
@@ -96,7 +97,6 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
                     holder.cb.setVisibility(View.INVISIBLE);
                     holder.radio.setVisibility(View.INVISIBLE);
                 }
-
                 else{
                     holder.name.setText("null");
                 }
@@ -114,7 +114,6 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
                         intent.putExtra("Rating", list.get(position).getInt("Rating"));
                         intent.putExtra("Review", list.get(position).getString("Review"));
                         intent.putExtra("Favourite", list.get(position).getBoolean("fav"));
-
                         context.startActivity(intent);
                     }
                 });
@@ -134,11 +133,11 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
 
             case 5:
                 ParseObject imdbObject = list.get(position);
+
                 if (imdbObject.getString("Title") != null){
                     holder.name.setText(imdbObject.getString("Title"));
                     holder.cb.setVisibility(View.INVISIBLE);
                 }
-
                 else{
                     holder.name.setText("null");
                 }
@@ -152,9 +151,9 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultHolder> {
                         }else{
                             arrayListChecked.remove(list.get(position).getString("Title"));
                         }
-
                     }
                 });
+
                 break;
         }
     }
