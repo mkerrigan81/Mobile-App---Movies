@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Movie;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -31,7 +33,12 @@ public class EditMovies extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_movies);
         editList = findViewById(R.id.editList);
-        getData();
+
+        if (isNetworkAvailable(EditMovies.this)){
+            getData();
+        }else{
+            Toast.makeText(EditMovies.this, "Your device isn't connected to the internet", Toast.LENGTH_LONG).show();
+        }
     }
 
     //Helper method which is called in the mainMethod
@@ -58,5 +65,9 @@ public class EditMovies extends AppCompatActivity{
         adapter = new ResultAdapter(this, objects,3);
         editList.setLayoutManager(new LinearLayoutManager(this));
         editList.setAdapter(adapter);
+    }
+    public boolean isNetworkAvailable(Context context){
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

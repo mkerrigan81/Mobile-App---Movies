@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -46,7 +48,11 @@ public class SearchMovies extends AppCompatActivity {
             public void onClick(View view) {
 
                 str1 = txtSearchBox.getText().toString();
-                getData();
+                if (isNetworkAvailable(SearchMovies.this)){
+                    getData();
+                }else{
+                    Toast.makeText(SearchMovies.this, "Your device isn't connected to the internet", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -58,7 +64,7 @@ public class SearchMovies extends AppCompatActivity {
         ParseQuery<ParseObject> titleQuery = new ParseQuery<ParseObject>("Movies");
         //Here we're adding more queries to check for a movie where the value in the Title column
         //starts or ends with the value from our str1
-        titleQuery.whereMatches("Title", str1);
+        titleQuery.whereMatches("Title", str1, "i");
         titleQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objList, ParseException e) {
@@ -70,7 +76,7 @@ public class SearchMovies extends AppCompatActivity {
 
                     if (objList.isEmpty()){
                         ParseQuery<ParseObject> actorQuery = new ParseQuery<ParseObject>("Movies");
-                        actorQuery.whereMatches("Actor", str1);
+                        actorQuery.whereMatches("Actor", str1, "i");
                         actorQuery.findInBackground(new FindCallback<ParseObject>() {
                             @Override
                             public void done(List<ParseObject> objList2, ParseException e) {
@@ -82,7 +88,7 @@ public class SearchMovies extends AppCompatActivity {
 
                                     if(objList.isEmpty() && objList2.isEmpty()){
                                         ParseQuery<ParseObject> directorQuery = new ParseQuery<ParseObject>("Movies");
-                                        directorQuery.whereMatches("Director", str1);
+                                        directorQuery.whereMatches("Director", str1, "i");
                                         directorQuery.findInBackground(new FindCallback<ParseObject>() {
                                             @Override
                                             public void done(List<ParseObject> objList3, ParseException e) {
@@ -114,5 +120,10 @@ public class SearchMovies extends AppCompatActivity {
         adapter = new ResultAdapter(this, objects,4);
         searchResultList.setLayoutManager(new LinearLayoutManager(this));
         searchResultList.setAdapter(adapter);
+    }
+
+    public boolean isNetworkAvailable(Context context){
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

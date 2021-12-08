@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +35,13 @@ public class Favourites extends AppCompatActivity {
         setContentView(R.layout.activity_favourites);
         saveFavourites = (Button) findViewById(R.id.btnSaveFavourites);
         favouritesList = findViewById(R.id.favouritesList);
-        getFavourites();
+
+        if (isNetworkAvailable(Favourites.this)){
+            getFavourites();;
+        }else{
+            Toast.makeText(Favourites.this, "Your device isn't connected to the internet", Toast.LENGTH_LONG).show();
+        }
+
 
         saveFavourites.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,6 +61,7 @@ public class Favourites extends AppCompatActivity {
     public void getFavourites(){
 
         ParseQuery<ParseObject> movieQuery = new ParseQuery<ParseObject>("Movies");
+        movieQuery.orderByAscending("title");
         movieQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objList, ParseException e) {
@@ -106,5 +115,9 @@ public class Favourites extends AppCompatActivity {
             }
         });
 
+    }
+    public boolean isNetworkAvailable(Context context){
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

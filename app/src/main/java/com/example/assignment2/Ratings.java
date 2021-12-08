@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Movie;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,13 +43,14 @@ import java.util.List;
 
 public class Ratings extends AppCompatActivity {
 
-    Button btnImdb;
+    TextView txttitle, txtrating;
+    Button btnImdb, btnReset;
     RecyclerView resultList;
     ResultAdapter adapter;
     ArrayList<String> myArrChecked;
 
-    String queryString = "https://imdb-api.com/en/API/SearchTitle/k_tsrkk0q3/"; //First queryString to get the title
-    String queryString2 = "https://imdb-api.com/en/API/Ratings/k_tsrkk0q3/"; //Second queryString to get ID
+    String queryString = "https://imdb-api.com/en/API/SearchTitle/k_2xa59rop/"; //First queryString to get the title
+    String queryString2 = "https://imdb-api.com/en/API/Ratings/k_2xa59rop/"; //Second queryString to get ID
 
     //For displaying movie ratings
     RecyclerView ratingList;//RecyclerView which will display the movies and the movie ratings when a title is clicked
@@ -56,7 +58,6 @@ public class Ratings extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
     ArrayList<Object> viewItems = new ArrayList<>();
 
-    /*ImageView imageView;*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +65,44 @@ public class Ratings extends AppCompatActivity {
         setContentView(R.layout.activity_ratings);
         resultList = findViewById(R.id.resultList);
         btnImdb = findViewById(R.id.btnIMDB);
+        btnReset = findViewById(R.id.btnReset);
         ratingList = findViewById(R.id.ratingList);
+        txttitle = findViewById(R.id.textView2);
+        txtrating = findViewById(R.id.textView3);
+        txtrating.setVisibility(View.INVISIBLE);
+        txttitle.setVisibility(View.INVISIBLE);
 
         //Call method to populate initial movie list
-        getData();
+        if (isNetworkAvailable(Ratings.this)){
+            getData();
+        }else{
+            Toast.makeText(Ratings.this, "Your device isn't connected to the internet", Toast.LENGTH_LONG).show();
+        }
+
 
         btnImdb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (adapter.arrayListChecked.isEmpty()){
+                    Toast.makeText(Ratings.this, "Please Select a Movie", Toast.LENGTH_LONG).show();
+                }else{
+                    callVolley(queryString, queryString2);
+                    txttitle.setVisibility(View.VISIBLE);
+                    txtrating.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
-                callVolley(queryString, queryString2);
+        btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("Clear clicked");
+                if (adapter.arrayListChecked.isEmpty()){
+                    Toast.makeText(Ratings.this, "No Movies are Selected to Reset", Toast.LENGTH_LONG).show();
+                }else{
+                    mAdapter.removeAt();
+                    adapter.reset();
+                }
             }
         });
     }
@@ -102,20 +131,6 @@ public class Ratings extends AppCompatActivity {
                                         String imageUrl = obj1.getString("image");
                                         System.out.println("id = " + id);
 
-                                        /*ImageRequest imageRequest = new ImageRequest(imageUrl,
-                                                new Response.Listener<Bitmap>() {
-                                                    @Override
-                                                    public void onResponse(Bitmap response) {
-                                                        *//*imageView.setImageBitmap(response);*//*
-                                                    }
-                                                }, 0, 0, null, null, new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                System.out.println("Image didn't work");
-                                            }
-                                        });
-                                        queue.add(imageRequest);*/
-
                                         String titleQueryString = newUrl2 + id; //Once we get the id from the first response, we parse it onto the end of our second URL
                                         StringRequest stringRequest2 = new StringRequest(Request.Method.GET, titleQueryString, //Our second StringRequest using titleQueryString to get the rating of movies from first Request
                                                 new Response.Listener<String>() {
@@ -128,15 +143,26 @@ public class Ratings extends AppCompatActivity {
                                                                 System.out.println(jobject2.toString());
                                                                 String rating = jobject2.getString("imDb");
                                                                 String title = jobject2.getString("title");
-                                                                MovieRatings movieRatings = new MovieRatings(title, rating);
-                                                                viewItems.add(movieRatings);
-                                                                /*txtDisplayList.append("Movie: " + title + " | " + "Rating: " + rating + "\n" + "\n" + "\n");//Setting our TextView to the title and ratings of movies*/
 
-
-                                                                layoutManager = new LinearLayoutManager(Ratings.this);
-                                                                ratingList.setLayoutManager(layoutManager);
-                                                                mAdapter = new RatingsAdapter(Ratings.this, viewItems);
-                                                                ratingList.setAdapter(mAdapter);
+                                                                //ImageRequest to set image url to bitmap
+                                                                ImageRequest imageRequest = new ImageRequest(imageUrl,
+                                                                        new Response.Listener<Bitmap>() {
+                                                                            @Override
+                                                                            public void onResponse(Bitmap response) {
+                                                                                MovieRatings movieRatings1 = new MovieRatings(title, rating, response);//Adding the title, rating and bitmap of the image of the movies to our MovieRatings
+                                                                                viewItems.add(movieRatings1);//Adding items to viewItems array
+                                                                                layoutManager = new LinearLayoutManager(Ratings.this);//Setting layoutManager and Adapter with context from the page
+                                                                                ratingList.setLayoutManager(layoutManager);
+                                                                                mAdapter = new RatingsAdapter(Ratings.this, viewItems);
+                                                                                ratingList.setAdapter(mAdapter);
+                                                                            }
+                                                                        }, 0, 0, null, null, new Response.ErrorListener() {
+                                                                    @Override
+                                                                    public void onErrorResponse(VolleyError error) {
+                                                                        System.out.println("Image didn't work");
+                                                                    }
+                                                                });
+                                                                queue.add(imageRequest);
 
                                                             }catch (JSONException e){
                                                                 e.printStackTrace();//Error message to system for debugging purposes
@@ -168,8 +194,7 @@ public class Ratings extends AppCompatActivity {
     public void getData(){
 
         ParseQuery<ParseObject> movieQuery = new ParseQuery<ParseObject>("Movies");
-        //Query to get movies sorted alphabetically
-        movieQuery.orderByAscending("Title");
+        movieQuery.orderByAscending("Title");//Query to get movies sorted alphabetically
         movieQuery.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objList, ParseException e) {
@@ -191,5 +216,10 @@ public class Ratings extends AppCompatActivity {
         adapter = new ResultAdapter(this, objects,5);
         resultList.setLayoutManager(new LinearLayoutManager(this));
         resultList.setAdapter(adapter);
+    }
+
+    public boolean isNetworkAvailable(Context context){
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }

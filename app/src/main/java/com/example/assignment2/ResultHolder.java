@@ -3,6 +3,7 @@ package com.example.assignment2;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ public class ResultHolder extends RecyclerView.ViewHolder {
     CheckBox cb;
     RadioButton radio;
     RatingBar ratingBar;
+    ImageView movieImage;
 
     //For ratings page
     TextView viewTitle, viewRating;
@@ -41,5 +43,6 @@ public class ResultHolder extends RecyclerView.ViewHolder {
 
         viewTitle = itemView.findViewById(R.id.textViewTitle);
         viewRating = itemView.findViewById(R.id.textViewRating);
+        movieImage = itemView.findViewById(R.id.movieImage);
     }
 }

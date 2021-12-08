@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.graphics.Movie;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -38,7 +40,13 @@ public class DisplayMovies extends AppCompatActivity {
         setContentView(R.layout.activity_display_movies);
         favourites = findViewById(R.id.btnFavs);
         resultList = findViewById(R.id.resultList);
-        getData();
+
+        if (isNetworkAvailable(DisplayMovies.this)){
+            getData();
+        }else{
+            Toast.makeText(DisplayMovies.this, "Your device isn't connected to the internet", Toast.LENGTH_LONG).show();
+        }
+
 
         //Handles when the Favourites button has been clicked
         favourites.setOnClickListener(new View.OnClickListener() {
@@ -112,14 +120,19 @@ public class DisplayMovies extends AppCompatActivity {
                                             System.out.println(title_Name + " is updated to true");
                                             Toast.makeText(DisplayMovies.this, "This movie has been added to your Favourites"
                                                     , Toast.LENGTH_SHORT).show();
+                                            }
                                         }
-                                    }
-                                });
+                                    });
                             }
                         }
                     });
                 }
             }
         });
+    }
+
+    public boolean isNetworkAvailable(Context context){
+        ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();
     }
 }
